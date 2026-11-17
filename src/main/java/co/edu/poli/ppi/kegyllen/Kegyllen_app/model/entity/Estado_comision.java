@@ -5,5 +5,7 @@ public enum Estado_comision {
     INACTIVA,
     COMPLETADA,
     SOLICITADA,
-    CANCELADA
+    CANCELADA,
+    ACEPTADA,
+    EN_PROGRESO
 }
