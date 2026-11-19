@@ -39,4 +39,19 @@ public class ComisionController {
         ComisionRespDTO comisionActualizada = comisionService.actualizarEstadoComision(id, nuevoEstado, txHash);
         return ResponseEntity.ok(comisionActualizada);
     }
+
+    @PostMapping("/{id}/entrega")
+    public ResponseEntity<CertificadoRespDTO> registrarEntrega(
+            @PathVariable Long id,
+            @RequestBody CertificadoEntregaReqDTO request) {
+        CertificadoRespDTO response = comisionService.registrarEntrega(id, request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @PatchMapping("/{id}/confirmar")
+    public ResponseEntity<Void> confirmarRecepcion(@PathVariable Long id) {
+        comisionService.confirmarRecepcion(id);
+        return ResponseEntity.noContent().build();
+    }
+
 }
