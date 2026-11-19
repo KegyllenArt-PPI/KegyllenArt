@@ -2,6 +2,7 @@ package co.edu.poli.ppi.kegyllen.Kegyllen_app.repository;
 
 import co.edu.poli.ppi.kegyllen.Kegyllen_app.model.entity.Asignacion_comision_Id;
 import co.edu.poli.ppi.kegyllen.Kegyllen_app.model.entity.Asignaciones_comision;
+import co.edu.poli.ppi.kegyllen.Kegyllen_app.model.entity.Rol_comision;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -13,4 +14,11 @@ import java.util.List;
 public interface AsignacionComisionRepository extends JpaRepository <Asignaciones_comision, Asignacion_comision_Id> {
     @Query("SELECT a FROM Asignaciones_comision a WHERE a.id.id_usuario = :idUsuario")
     List<Asignaciones_comision> findByIdUsuario(@Param("idUsuario") Long idUsuario);
+
+    @Query("SELECT COUNT(a) > 0 FROM Asignaciones_comision a WHERE a.comision.id_comision = :idComision AND a.id_usuario = :idUsuario AND a.rol_comision = :rolComision")
+    boolean existsByIdComisionAndIdUsuarioAndRolComision(
+            @Param("idComision") Long idComision,
+            @Param("idUsuario") Long idUsuario,
+            @Param("rolComision") Rol_comision rolComision
+    );
 }

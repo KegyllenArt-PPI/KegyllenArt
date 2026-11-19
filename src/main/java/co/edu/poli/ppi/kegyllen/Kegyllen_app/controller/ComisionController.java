@@ -1,5 +1,7 @@
 package co.edu.poli.ppi.kegyllen.Kegyllen_app.controller;
 
+import co.edu.poli.ppi.kegyllen.Kegyllen_app.model.dto.CertificadoEntregaReqDTO;
+import co.edu.poli.ppi.kegyllen.Kegyllen_app.model.dto.CertificadoRespDTO;
 import co.edu.poli.ppi.kegyllen.Kegyllen_app.model.dto.ComisionReqDTO;
 import co.edu.poli.ppi.kegyllen.Kegyllen_app.model.dto.ComisionRespDTO;
 import co.edu.poli.ppi.kegyllen.Kegyllen_app.model.entity.Estado_comision;
