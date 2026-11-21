@@ -1,49 +1,51 @@
-import '../style.css'
-import javascriptLogo from '../javascript.svg'
-import viteLogo from '/vite.svg'
-import { setupCounter } from '../counter.js'
+import { hasActiveSession, getSessionUser, logout } from './api/auth.js';
+import { renderLoginView } from './views/login.js';
 
-document.querySelector('#app').innerHTML = `
-  <div>
-    <a href="https://vite.dev" target="_blank">
-      <img src="${viteLogo}" class="logo" alt="Vite logo" />
-    </a>
-    <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript" target="_blank">
-      <img src="${javascriptLogo}" class="logo vanilla" alt="JavaScript logo" />
-    </a>
-    <h1>Hello Vite!</h1>
-    <div class="card">
-      <button id="counter" type="button"></button>
-    </div>
-    <p class="read-the-docs">
-      Click on the Vite logo to learn more
-    </p>
-  </div>
-`
-import { apiRequest, setToken, getToken, clearToken } from './api/http.js';
+const appEl = document.querySelector('#app');
 
-window.addEventListener('auth:unauthorized', () => {
-    console.warn('Sesión no autorizada o expirada (401). Token limpiado.');
-});
+function showLogin(expiredMessage = '') {
+    renderLoginView(appEl, {
+        onSuccess: () => {
+            showDashboard();
+        },
+    });
 
-async function probarHttpClient() {
-    // 1. Guarda un token de prueba (o un JWT real que tengas de Postman/Insomnia)
-    setToken('eyJhbGciOiJIUzI1NiJ9.eyJyb2wiOlt7ImF1dGhvcml0eSI6ImFkbWluaXN0cmFkb3IifV0sInN1YiI6InRlc3RAZXhhbXBsZS5jb20iLCJpYXQiOjE3OTUwOTY4MTAsImV4cCI6MTc5NTE4MzIxMH0.hYFDjo_2nQ55SZM3Zyo8RhwmZR66573rJnW6RTqzVGc');
-    console.log('Token guardado:', getToken());
-
-    // 2. Cambia '/comisiones/mis-comisiones' por un endpoint real de tu backend
-    try {
-        const data = await apiRequest('/comisiones/mis-comisiones');
-        console.log('Petición exitosa:', data);
-    } catch (error) {
-        console.error('Error en apiRequest:', {
-            status: error.status,
-            message: error.message,
-            data: error.data,
-        });
+    if (expiredMessage) {
+        const errorEl = appEl.querySelector('#login-error');
+        if (errorEl) {
+            errorEl.textContent = expiredMessage;
+            errorEl.hidden = false;
+        }
     }
 }
 
-probarHttpClient();
+function showDashboard() {
+    const user = getSessionUser();
 
-setupCounter(document.querySelector('#counter'))
+    appEl.innerHTML = `
+    <main class="dashboard-placeholder">
+      <header>
+        <h1>Dashboard de Comisiones</h1>
+        <p>Usuario: <strong>${user?.correo ?? 'Sesión activa'}</strong> | Rol: <strong>${user?.rol ?? 'N/A'}</strong></p>
+        <button id="logout-btn" type="button">Cerrar sesión</button>
+      </header>
+      <p>Sesión autenticada correctamente. Aquí conectaremos el listado de comisiones.</p>
+    </main>
+  `;
+
+    appEl.querySelector('#logout-btn')?.addEventListener('click', () => {
+        logout();
+        showLogin();
+    });
+}
+
+window.addEventListener('auth:unauthorized', () => {
+    logout();
+    showLogin('Tu sesión expiró o no es válida. Inicia sesión nuevamente.');
+});
+
+if (hasActiveSession()) {
+    showDashboard();
+} else {
+    showLogin();
+}
